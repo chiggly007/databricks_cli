@@ -54,6 +54,7 @@ import (
 	lakeview "github.com/databricks/cli/cmd/workspace/lakeview"
 	lakeview_embedded "github.com/databricks/cli/cmd/workspace/lakeview-embedded"
 	libraries "github.com/databricks/cli/cmd/workspace/libraries"
+	lineage_tracking "github.com/databricks/cli/cmd/workspace/lineage-tracking"
 	materialized_features "github.com/databricks/cli/cmd/workspace/materialized-features"
 	metastores "github.com/databricks/cli/cmd/workspace/metastores"
 	model_registry "github.com/databricks/cli/cmd/workspace/model-registry"
@@ -98,6 +99,7 @@ import (
 	serving_endpoints "github.com/databricks/cli/cmd/workspace/serving-endpoints"
 	settings "github.com/databricks/cli/cmd/workspace/settings"
 	shares "github.com/databricks/cli/cmd/workspace/shares"
+	statement_execution "github.com/databricks/cli/cmd/workspace/statement-execution"
 	storage_credentials "github.com/databricks/cli/cmd/workspace/storage-credentials"
 	system_schemas "github.com/databricks/cli/cmd/workspace/system-schemas"
 	table_constraints "github.com/databricks/cli/cmd/workspace/table-constraints"
@@ -179,6 +181,7 @@ func All() []*cobra.Command {
 	out = append(out, lakeview.New())
 	out = append(out, lakeview_embedded.New())
 	out = append(out, libraries.New())
+	out = append(out, lineage_tracking.New())
 	out = append(out, materialized_features.New())
 	out = append(out, metastores.New())
 	out = append(out, model_registry.New())
@@ -223,6 +226,7 @@ func All() []*cobra.Command {
 	out = append(out, serving_endpoints.New())
 	out = append(out, settings.New())
 	out = append(out, shares.New())
+	out = append(out, statement_execution.New())
 	out = append(out, storage_credentials.New())
 	out = append(out, system_schemas.New())
 	out = append(out, table_constraints.New())
