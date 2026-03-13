@@ -27,12 +27,13 @@ func New() *cobra.Command {
 // newExecuteStatementCommand returns the execute-statement subcommand.
 func newExecuteStatementCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "execute-statement STATEMENT",
+		Use:   "execute-statement [WAREHOUSE_ID] STATEMENT",
 		Short: "Execute a SQL statement",
 		Long: `Execute a SQL statement and optionally await its results.
 
 The warehouse_id is automatically set to a5e694153a0d5e8c by default, but can be overridden:
 - Via DATABRICKS_WAREHOUSE_ID environment variable
+- Via --warehouse-id / --warehouse_id flag
 - As an explicit parameter (for different warehouses)
 
 Default settings:
@@ -87,9 +88,15 @@ Examples:
 	cmd.Flags().StringVar(&req.Format, "format", "JSON_ARRAY", "Result format (JSON_ARRAY, ARROW_STREAM, CSV)")
 	cmd.Flags().StringVar(&req.WaitTimeout, "wait-timeout", "10s", "Wait timeout for synchronous execution")
 	cmd.Flags().StringVar(&req.OnWaitTimeout, "on-wait-timeout", "CONTINUE", "Action on wait timeout (CONTINUE or CANCEL)")
+	cmd.Flags().StringVar(&req.WarehouseId, "warehouse-id", "", "Warehouse ID for statement execution")
+	cmd.Flags().StringVar(&req.WarehouseId, "warehouse_id", "", "Warehouse ID for statement execution")
 	cmd.Flags().Int64Var(&req.RowLimit, "row-limit", 0, "Row limit for result set")
 	cmd.Flags().Int64Var(&req.ByteLimit, "byte-limit", 16777216, "Byte limit for result size (default 16MB)")
 	cmd.Flags().StringVar(&filePath, "file", "", "Path to SQL file containing the statement (use '-' for stdin)")
+	err := cmd.Flags().MarkHidden("warehouse_id")
+	if err != nil {
+		panic(err)
+	}
 
 	cmd.PreRunE = root.MustWorkspaceClient
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
@@ -102,6 +109,9 @@ Examples:
 
 			// Handle optional warehouse_id parameter
 			if len(args) == 2 {
+				if req.WarehouseId != "" {
+					return fmt.Errorf("warehouse_id cannot be provided both as a flag and a positional argument")
+				}
 				req.WarehouseId = args[0]
 				req.Statement = args[1]
 			} else {
@@ -114,6 +124,9 @@ Examples:
 				return cmd.Usage()
 			}
 			if len(args) == 1 {
+				if req.WarehouseId != "" {
+					return fmt.Errorf("warehouse_id cannot be provided both as a flag and a positional argument")
+				}
 				req.WarehouseId = args[0]
 			}
 
